@@ -18,7 +18,15 @@
       padding: 0;
     }
     li {
-      margin: 5px 0;
+      margin: 10px 0;
+    }
+    .time {
+      display: block;
+      font-weight: bold;
+      margin-left: 20px;
+    }
+    .details {
+      margin-left: 40px;
     }
   </style>
 </head>
@@ -64,7 +72,8 @@
 
           return `
             <li>
-              <strong>Linie 5</strong> to ${richtung} at ${timeFormatted} (${diffMinutes} min)
+              <span class="time">${timeFormatted} (in ${diffMinutes} Min)</span>
+              <span class="details">Linie 5 richtung ${richtung}</span>
             </li>
           `;
         }).join("");
