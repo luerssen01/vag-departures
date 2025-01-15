@@ -1,51 +1,84 @@
-const API_BASE_URL = "https://start.vag.de/dm/api/v1";
-const NETVU = "vgn";
-const HALTID = "542"; // Siemensstraße HaltID (VGNKennung)
-
-async function fetchDepartures() {
-  const departureList = document.getElementById("departure-list");
-  const errorMessage = document.getElementById("error-message");
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/abfahrten/${NETVU}/${HALTID}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abfahrten Siemensstraße</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
     }
-    const data = await response.json();
-    const departures = data.Abfahrten || [];
+    .error {
+      color: red;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Abfahrten Siemensstraße</h1>
+  <ul id="departure-list"></ul>
+  <p class="error" id="error-message"></p>
 
-    // Format departure times and display them
-    departureList.innerHTML = departures.map(dep => {
-      const departureTime = new Date(dep.AbfahrtszeitIst);
-      const now = new Date();
+  <script>
+    const API_BASE_URL = "https://start.vag.de/dm/api/v1";
+    const NETVU = "vgn";
+    const HALTID = "542"; // Siemensstraße HaltID (VGNKennung)
 
-      // Format time as hh:mm
-      const hours = departureTime.getHours().toString().padStart(2, "0");
-      const minutes = departureTime.getMinutes().toString().padStart(2, "0");
-      const timeFormatted = `${hours}:${minutes}`;
+    async function fetchDepartures() {
+      const departureList = document.getElementById("departure-list");
+      const errorMessage = document.getElementById("error-message");
 
-      // Calculate minutes until departure
-      const diffMinutes = Math.round((departureTime - now) / 60000);
+      try {
+        const response = await fetch(`${API_BASE_URL}/abfahrten/${NETVU}/${HALTID}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        const departures = data.Abfahrten || [];
 
-      // Handle Richtung and Linie replacements
-      let richtung = dep.Richtung;
-      if (richtung === "Richtung2") richtung = "Tiergarten (Innenstadt)";
-      else if (richtung === "Richtung1") richtung = "Worzeldorfer Straße (Stadtauswärts)";
+        // Format departure times and display them
+        departureList.innerHTML = departures.map(dep => {
+          const departureTime = new Date(dep.AbfahrtszeitIst);
+          const now = new Date();
 
-      return `
-        <li>
-          <strong>Linie 5</strong> to ${richtung} at ${timeFormatted} (${diffMinutes} min)
-        </li>
-      `;
-    }).join("");
+          // Format time as hh:mm
+          const hours = departureTime.getHours().toString().padStart(2, "0");
+          const minutes = departureTime.getMinutes().toString().padStart(2, "0");
+          const timeFormatted = `${hours}:${minutes}`;
 
-    // Clear any previous error message
-    errorMessage.textContent = "";
-  } catch (error) {
-    console.error("Error fetching departures:", error);
-    errorMessage.textContent = "Failed to load departures. Please try again later.";
-  }
-}
+          // Calculate minutes until departure
+          const diffMinutes = Math.round((departureTime - now) / 60000);
 
-// Fetch departures on page load
-fetchDepartures();
+          // Handle Richtung and Linie replacements
+          let richtung = dep.Richtung;
+          if (richtung === "Richtung2") richtung = "Tiergarten (Innenstadt)";
+          else if (richtung === "Richtung1") richtung = "Worzeldorfer Straße (Stadtauswärts)";
+
+          return `
+            <li>
+              <strong>Linie 5</strong> to ${richtung} at ${timeFormatted} (${diffMinutes} min)
+            </li>
+          `;
+        }).join("");
+
+        // Clear any previous error message
+        errorMessage.textContent = "";
+      } catch (error) {
+        console.error("Error fetching departures:", error);
+        errorMessage.textContent = "Failed to load departures. Please try again later.";
+      }
+    }
+
+    // Fetch departures on page load
+    fetchDepartures();
+  </script>
+</body>
+</html>
