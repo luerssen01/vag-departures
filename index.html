@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Departures from Siemensstraße</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    .error {
+      color: red;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Departures from Siemensstraße</h1>
+  <ul id="departure-list"></ul>
+  <p class="error" id="error-message"></p>
+
+  <script>
+    const API_BASE_URL = "https://start.vag.de/dm/api/v1";
+    const NETVU = "vgn";
+    const HALTID = "YOUR_HALTESTELLE_ID_HERE"; // Replace with the correct HaltID
+
+    async function fetchDepartures() {
+      const departureList = document.getElementById("departure-list");
+      const errorMessage = document.getElementById("error-message");
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/abfahrten/${NETVU}/${HALTID}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        const departures = data.Abfahrten || [];
+        departureList.innerHTML = departures.map(dep => `
+          <li>
+            <strong>Line ${dep.Linie}</strong> to ${dep.Richtung}
+            at ${new Date(dep.AbfahrtszeitIst).toLocaleTimeString()}
+          </li>
+        `).join("");
+        errorMessage.textContent = "";
+      } catch (error) {
+        console.error("Error fetching departures:", error);
+        errorMessage.textContent = "Failed to load departures. Please try again later.";
+      }
+    }
+
+    fetchDepartures();
+  </script>
+</body>
+</html>
