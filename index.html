@@ -4,36 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Abfahrten Siemensstraße</title>
+  <script type="module">
+    // Import Material Web components
+    import '@material/web/list/list.js';
+    import '@material/web/list/list-item.js';
+    import '@material/web/elevation/elevation.js';
+    import '@material/web/icon/icon.js';
+  </script>
   <style>
+    :root {
+      --md-sys-color-primary: #6200ee;
+      --md-sys-color-secondary: #03dac6;
+      --md-sys-color-on-primary: #ffffff;
+      --md-sys-color-surface: #ffffff;
+      --md-sys-color-error: #b00020;
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
       line-height: 1.6;
+      background-color: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
     }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    mwc-list {
+      --md-sys-color-primary: var(--md-sys-color-primary);
+      --md-sys-color-on-primary: var(--md-sys-color-on-primary);
+    }
+
     .error {
-      color: red;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      margin: 10px 0;
-    }
-    .time {
-      display: block;
-      font-weight: bold;
-      margin-left: 20px;
-    }
-    .details {
-      margin-left: 40px;
+      color: var(--md-sys-color-error);
     }
   </style>
 </head>
 <body>
-  <h1>Abfahrten Siemensstraße</h1>
-  <ul id="departure-list"></ul>
-  <p class="error" id="error-message"></p>
+  <div class="container">
+    <h1>Abfahrten Siemensstraße</h1>
+    <mwc-list id="departure-list"></mwc-list>
+    <p class="error" id="error-message"></p>
+  </div>
 
   <script>
     const API_BASE_URL = "https://start.vag.de/dm/api/v1";
@@ -71,10 +86,10 @@
           else if (richtung === "Richtung1") richtung = "Worzeldorfer Straße (Stadtauswärts)";
 
           return `
-            <li>
-              <span class="time">${timeFormatted} (in ${diffMinutes} Min)</span>
-              <span class="details">Linie 5 Richtung ${richtung}</span>
-            </li>
+            <mwc-list-item>
+              <span>${timeFormatted} (in ${diffMinutes} Min)</span>
+              <span slot="secondary">Linie 5 Richtung ${richtung}</span>
+            </mwc-list-item>
           `;
         }).join("");
 
